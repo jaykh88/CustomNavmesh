@@ -1,9 +1,7 @@
+// this is me
 // Fill out your copyright notice in the Description page of Project Settings.
 #include "TP_CustomNavLinkProxy.h"
 #include <NavLinkCustomComponent.h>
-
-
-
 
 ATP_CustomNavLinkProxy::ATP_CustomNavLinkProxy(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -23,7 +21,6 @@ ATP_CustomNavLinkProxy::ATP_CustomNavLinkProxy(const FObjectInitializer& ObjectI
 	StartEditorComp->SetGenerateOverlapEvents(false);
 	StartEditorComp->SetCanEverAffectNavigation(false);
 
-
 	EndEditorComp = CreateDefaultSubobject<USphereComponent>(TEXT("End"));
 	EndEditorComp->InitSphereRadius(30.0f);
 	EndEditorComp->SetupAttachment(RootComponent);
@@ -37,7 +34,6 @@ ATP_CustomNavLinkProxy::ATP_CustomNavLinkProxy(const FObjectInitializer& ObjectI
 #if WITH_EDITOR
 void ATP_CustomNavLinkProxy::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
-
 #if WITH_EDITORONLY_DATA
 	UNavLinkCustomComponent* const LinkComp = GetSmartLinkComp();
 	if (LinkComp)
@@ -93,7 +89,9 @@ void ATP_CustomNavLinkProxy::OnChildTransformUpdated(USceneComponent* UpdatedCom
 
 void ATP_CustomNavLinkProxy::SetEditorCompLocation(const FVector& StartCompLoc, const FVector& EndCompLoc)
 {
+#if WITH_EDITORONLY_DATA
 	StartEditorComp->SetWorldLocation(StartCompLoc);
 	EndEditorComp->SetWorldLocation(EndCompLoc);
 	SyncLinkDataToComponents();
+#endif
 }

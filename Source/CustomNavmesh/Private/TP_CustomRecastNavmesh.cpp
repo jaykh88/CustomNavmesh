@@ -1,5 +1,5 @@
+// this is me
 // Fill out your copyright notice in the Description page of Project Settings.
-
 
 #include "TP_CustomRecastNavmesh.h"
 #include "Engine/World.h"
@@ -20,9 +20,9 @@ ATP_CustomRecastNavmesh::ATP_CustomRecastNavmesh(const FObjectInitializer& Objec
 	bRegenerateNavLink = false;
 
 // 	static ConstructorHelpers::FObjectFinder<UClass> BPNavLink(TEXT("/Plugins/CustomNavmesh/Content/BP_CustomNavLink.BP_CustomNavLink_C"));
-// 	
+//
 // 	ensure(BPNavLink.Object);
-// 	
+//
 // 	BPNavlinkClass = BPNavLink.Object;
 }
 
@@ -49,7 +49,7 @@ void ATP_CustomRecastNavmesh::processNavMeshEdge(const TArray<uint32>& ChangedTi
 {
 	FRecastDebugGeometry DebugNavGeo;
 	DebugNavGeo.bGatherNavMeshEdges = true;
-	
+
 	for (auto const& TileIndex : ChangedTiles)
 	{
 		BeginBatchQuery();
@@ -84,16 +84,16 @@ void ATP_CustomRecastNavmesh::GenerateLinkSpawnData(const FVector & EdgeStepVert
 	FHitResult Hit;
 	// Trace away from edge to see if you can generate a link
 	bool bSuccess = GetWorld()->LineTraceSingleByChannel(Hit, EdgeStepVertex, TraceEnd, ECollisionChannel::ECC_Visibility);
-	
+
 	if (!bSuccess)
 	{
 		// Direction towards the outside of the edge
 		FVector EdgeToOutside = (TraceEnd - EdgeStepVertex).GetSafeNormal();
 		// Get Y direction
 		FVector YDirection = FVector::CrossProduct(FVector(0, 0, 1), EdgeToOutside);
-		// Get Z direction 
+		// Get Z direction
 		FVector ZDirection = FVector::CrossProduct(EdgeToOutside, YDirection);
-		// Create a rotation matrix to use for checking for the floor 
+		// Create a rotation matrix to use for checking for the floor
 		FMatrix RotationMatrix = FMatrix(EdgeToOutside, YDirection, ZDirection, FVector4(0, 0, 0, 1));
 
 #if !(UE_BUILD_SHIPPING || UE_BUILD_TEST) || WITH_EDITOR
@@ -110,7 +110,7 @@ void ATP_CustomRecastNavmesh::GenerateLinkSpawnData(const FVector & EdgeStepVert
 
 		if (bSuccess)
 		{
-			// if the agent can step on the surface, ignore 
+			// if the agent can step on the surface, ignore
 			if (Hit.Actor->IsValidLowLevelFast())
 			{
 				auto const& bDontGeneratLinksEnd = Hit.Actor->ActorHasTag(FName("NoLinks"));
@@ -120,7 +120,8 @@ void ATP_CustomRecastNavmesh::GenerateLinkSpawnData(const FVector & EdgeStepVert
 				}
 			}
 
-			if (TraceEnd.Z - Hit.Location.Z < AgentMaxStepHeight)
+			auto const& DistanceBetweenNodes = FVector::Distance(TraceEnd, Hit.Location);
+			if (TraceEnd.Z - Hit.Location.Z < AgentMaxStepHeight || DistanceBetweenNodes < 300.f)
 			{
 				return;
 			}
@@ -159,6 +160,9 @@ void ATP_CustomRecastNavmesh::DeleteAllNavLinks()
 {
 	for (auto const& NavLink : NavLinkReferences)
 	{
-		GetWorld()->DestroyActor(Cast<AActor>(NavLink));
+		if (GetWorld() && NavLink)
+		{
+			GetWorld()->DestroyActor(Cast<AActor>(NavLink));
+		}
 	}
 }

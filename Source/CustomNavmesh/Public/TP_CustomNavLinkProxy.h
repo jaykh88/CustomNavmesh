@@ -1,3 +1,4 @@
+// this is me
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
@@ -8,13 +9,13 @@
 #include "TP_CustomNavLinkProxy.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class CUSTOMNAVMESH_API ATP_CustomNavLinkProxy : public ANavLinkProxy
 {
 	GENERATED_BODY()
-	
+
 public:
 
 	ATP_CustomNavLinkProxy(const FObjectInitializer& ObjectInitializer);
@@ -30,10 +31,10 @@ public:
 #endif
 
 	void SetEditorCompLocation(const FVector& StartCompLoc, const FVector& EndCompLoc);
-
+#if WITH_EDITORONLY_DATA
 	FVector GetStartCompLocation() const { return StartEditorComp->GetComponentLocation(); }
 	FVector GetEndCompLocation() const { return EndEditorComp->GetComponentLocation(); }
-
+#endif
 protected:
 #if WITH_EDITORONLY_DATA
 
