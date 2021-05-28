@@ -111,7 +111,8 @@ void ATP_CustomRecastNavmesh::GenerateLinkSpawnData(const FVector & EdgeStepVert
 		if (bSuccess)
 		{
 			// if the agent can step on the surface, ignore 
-			if (TraceEnd.Z - Hit.Location.Z < AgentMaxStepHeight)
+			auto const& bDontGeneratLinksEnd = Hit.Actor->ActorHasTag(FName("NoLinks"));
+			if (TraceEnd.Z - Hit.Location.Z < AgentMaxStepHeight || bDontGeneratLinksEnd)
 			{
 				return;
 			}
